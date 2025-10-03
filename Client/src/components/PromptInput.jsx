@@ -4,6 +4,7 @@ import { GenrateapiResponse } from "../api"; // <-- API helper
 function PromptPilot() {
   const [input, setInput] = useState("");
   const [refinedPrompt, setRefinedPrompt] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // const handleGenerate = async () => {
   //   if (!input.trim()) return;
@@ -27,9 +28,16 @@ function PromptPilot() {
 
   const handleGenerate = async () => {
     if (!input.trim()) return;
+    
+
+    setLoading(true);
+    setRefinedPrompt("Generating...");
+
     const result = await GenrateapiResponse(input);
     setRefinedPrompt(result);
     // Add to history
+    setInput("");
+    setLoading(false);
     setHistory([
       { input, output: result, timestamp: Date.now() },
       ...history.slice(0, 9), // Keep max 10 items
@@ -44,7 +52,8 @@ function PromptPilot() {
         rows="4"
         placeholder="Enter your raw idea..."
         value={input}
-        onChange={(e) => setInput(e.target.value)}
+        onChange={(e) => setInput(e.target.value)  
+         } 
       />
 
       <button
@@ -92,6 +101,15 @@ function PromptPilot() {
                   title="Copy output"
                 >
                   Copy Output
+                </button>
+                <button
+                  className="ml-2 px-2 py-1 bg-red-200 rounded hover:bg-red-300 text-sm"
+                  onClick={() =>
+                    setHistory(history.filter((_, i) => i !== idx))
+                  }
+                  title="Delete entry"
+                >
+                  Delete
                 </button>
               </li>
             ))}
